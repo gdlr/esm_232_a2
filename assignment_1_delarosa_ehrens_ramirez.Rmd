@@ -18,8 +18,6 @@ view(clim)
 ## Loebel et al. function
 
 almond_yield <- function(climate_df){
-
-  climate_df <- clim
   
   # Create vector of minimum temperature in Feb for all years
   temp_min <- climate_df %>% 
