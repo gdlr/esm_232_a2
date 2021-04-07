@@ -1,0 +1,56 @@
+---
+title: "assignment_2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+```{r}
+clim <- read_delim("clim.txt", ' ')
+view(clim)
+```
+
+
+```{r}
+## Loebel et al. function
+
+almond_yield <- function(climate_df){
+
+  climate_df <- clim
+  
+  # Create vector of minimum temperature in Feb for all years
+  temp_min <- climate_df %>% 
+    group_by(year) %>% 
+    filter(month == 2) %>% 
+    summarize(tmin_c = mean(tmin_c))
+  
+  # Create vector of precipitation in Jan for all years
+  precip <-  climate_df %>% 
+    group_by(year) %>% 
+    filter(month == 1) %>% 
+    summarize(precip = mean(precip))
+  
+  # bind them together
+  full_df <- full_join(temp_min, precip, by = "year")
+  
+  # apply the yeild function from Lobell et al.
+  yeild <- function(temp_min, precip){
+        result = (-0.015 * temp_min) - (0.0046 * temp_min^2) - (0.07 * precip) + (0.0043 * precip^2) + 0.28
+        return(result)
+  }
+  
+  # Run it over the vector
+  annual_almond_yeild <- mapply(yeild, temp_min = full_df$tmin_c, precip = full_df$precip)
+  
+  # Return a neat data frame
+  final_df <- cbind(full_df, annual_yeilds)
+  return(almond_yeild = final_df)
+}
+
+almond_yield(clim)
+
+```
+
