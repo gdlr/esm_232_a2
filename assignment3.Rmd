@@ -1,0 +1,18 @@
+
+---
+title: "assignment_3_sanchez-ramirez_ehrens_delarosa"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+```
+
+```{r}
+source("power_gen.R")
+
+
+
+```
