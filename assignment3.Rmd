@@ -8,11 +8,24 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
+library(janitor)
 ```
 
 ```{r}
-source("power_gen.R")
+source("almond_yeild2.R")
 
 
+# Read in data 
+clim_data <- read_table2("clim.txt") %>% 
+  clean_names()
+
+
+set.seed(99999)
+p_list <- rnorm(n = 500, mean = .0043, sd = .001)
+
+
+almond_yield(clim_data)
+
+mapply(almond_yield, climate = clim_data, t.coeff1 = -0.015, t.coeff2 = -0.0046, p.coeff1 = -0.07, p.coeff2 = p_list, intercep = 0.28)
 
 ```
