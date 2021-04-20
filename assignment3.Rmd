@@ -95,7 +95,7 @@ plot.2 <- yield_data %>%
   theme_classic()+
   scale_y_continuous(limits=c(-1700, 8000000)) +
   labs(x = "Harvest Years",
-       y = "NPV Yield Anomaly (ton/yr)") +
+       y = "NPV of Almond Yield Anomaly ($)") +
   theme(text = element_text(family = "serif"),
         axis.title.x = element_text(size=12, face="bold"),
         axis.title.y = element_text(size=12, face="bold"),
