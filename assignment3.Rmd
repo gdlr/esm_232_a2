@@ -5,7 +5,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 
 library(tidyverse)
 library(janitor)
@@ -14,32 +14,13 @@ library(purrr)
 ```
 
 ```{r}
-source("almond_yeild2.R")
 
-
-# Read in data 
-clim_data <- read_table2("clim.txt") %>% 
-  clean_names()
-
-
-set.seed(99999)
-p_list <- rnorm(n = 500, mean = .0043, sd = .001)
-
-
-almond_yield(clim_data)
-
-mapply(almond_yield, climate = clim_data, t.coeff1 = -0.015, t.coeff2 = -0.0046, p.coeff1 = -0.07, p.coeff2 = p_list, intercep = 0.28)
-
-```
-
-```{r}
-
-# Read in data 
+# Read in climate data 
 clim_data <- read_table2("clim.txt") %>% 
   clean_names()
 
 ```
-
+### Part 1 - Almond Yield Sensitivity Analysis
 ```{r}
 
 # call the function
@@ -49,7 +30,8 @@ source("almond_yield.R")
 p.coeff2 <- rnorm(n = 500, mean = 0.0043, sd = .001)
 
 # use map_dfr to out put a data frame taking into account all the variability 
-yield_data = p.coeff2 %>% map_dfr(~almond_yield( climate = clim_data, p.coeff2 = .x) )
+yield_data = p.coeff2 %>% 
+  map_dfr(~almond_yield( climate = clim_data, p.coeff2 = .x) )
 
 # plot the results using a box plot for uncertainty per year
 plot.1 <- yield_data %>% 
@@ -68,25 +50,30 @@ plot.1 <- yield_data %>%
         legend.text = element_text(size = 8),
         legend.title = element_text(size=8, face="bold"),
         legend.position = "none")
+
+# view plot
+plot.1
+
 # Save plot
-ggsave(plot = plot.1, filename = "plot2.png", width = 10, height = 7)
+ggsave(plot = plot.1, filename = "yield_uncertainty_plot.png", width = 10, height = 7)
 
 ```
 
+### Part 2 - NPV of Almond Yield Anomaly
 ```{r}
 
 # What do we know for NPV function
 # Almond production cost $3800/acre (assuming per year)
 # Almond profit is $2.50/lb
-# Almond production on average is 1/ton/acre/yr
+# Almond production on average is 1 ton/acre/yr
 # 2000 lb in 1 ton
-# so 2000/lb/acre/yr * $2.50/lb = $5000/acre/yr
+# so 2000 lb/acre/yr * $2.50/lb = $5000/acre/yr
 # the almond yield function output is in tons/acre
 
 # create a column for profit
 yield_data$profit = ((1+yield_data$yield) * 5000) - 3800
 
-# write and function of NPV
+# write a function of NPV
 NPV_function = function(value, time, discount = 0.12) {
 	npv = value / (1 + discount)^time
 	return(npv)
@@ -117,9 +104,13 @@ plot.2 <- yield_data %>%
         legend.text = element_text(size = 8),
         legend.title = element_text(size=8, face="bold"),
         legend.position = "none")
+
+#view plot
+plot.2
+
 # Save plot
-ggsave(plot = plot.3, filename = "plot3.png", width = 10, height = 7)
+ggsave(plot = plot.2, filename = "npv_plot.png", width = 10, height = 7)
 
 ```
 
-
+### END ASSIGNMENT 3
